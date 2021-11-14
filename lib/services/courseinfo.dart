@@ -5,6 +5,7 @@ import 'package:ta_app/main.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/dom.dart' hide Text;
 import 'package:html/parser.dart' show parse;
+import 'dart:developer';
 
 class Auth {
   String username;
@@ -56,23 +57,37 @@ class GetCourses {
 }
 
 class HeadlessViewController {
-  HeadlessInAppWebView? headlessWebView;
+  HeadlessInAppWebView? _headlessWebView;
 
-  void init(String url) {
+  HeadlessInAppWebView? get headlessWebView => _headlessWebView;
+
+  set headlessWebView(HeadlessInAppWebView? headlessWebView) {
+    _headlessWebView = headlessWebView;
+  }
+
+  bool __isLoading = false;
+
+  Future<String?> init(String url) async {
+    bool _isLoading = true;
     headlessWebView = HeadlessInAppWebView(
         initialUrlRequest: URLRequest(url: Uri.parse(url)),
-        onWebViewCreated: (controller) {
-          final snackBar = SnackBar(
-            content: Text("Webview created"),
-            duration: Duration(seconds: 2),
-          );
-        },
-        onLoadStart: (controller, url) async {
-          final snackBar = SnackBar(
-            content: Text('$url'),
-            duration: Duration(seconds: 2),
-          );
+        onLoadStop: (controller, url) async {
+          _isLoading = false;
         });
+
+    // while (true) {
+    //   Future.delayed(Duration(microseconds: 333333));
+
+    //   if (!_isLoading) {
+    //
+    //   }
+    // }
+    headlessWebView?.run();
+
+    while (_isLoading) {
+      await Future.delayed(Duration(milliseconds: 250));
+    }
+    return headlessWebView?.webViewController.getHtml();
   }
 
   void start() {
@@ -82,5 +97,9 @@ class HeadlessViewController {
 
   void stop() {
     headlessWebView?.dispose();
+  }
+
+  bool isRunning() {
+    return headlessWebView?.isRunning() ?? false;
   }
 }

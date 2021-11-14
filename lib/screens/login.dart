@@ -65,8 +65,13 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     user.username = userController.text;
                     user.pass = passController.text;
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Loading(user)));
+                    // webController.init(getCourses.GenUrl(user));
+                    // webController.start();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Loading(user, webController)));
                   },
                   child: Text('Login'),
                 )

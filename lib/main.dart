@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'TeachAssist',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
       ),
       home: LoginPage(),
     );
