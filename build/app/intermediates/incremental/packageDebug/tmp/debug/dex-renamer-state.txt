@@ -1,4 +1,4 @@
-#Fri Nov 12 11:49:38 EST 2021
+#Sun Nov 14 22:03:35 EST 2021
 base.0=C\:\\dev\\Apps\\ta_app\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 renamed.0=classes.dex
 path.0=classes.dex

@@ -21,6 +21,7 @@ class GetCourses {
 
   //RETURN COURSES
   List<Map> GetCourseMap(String html) {
+    // log(html);
     // get and store table containing course info
     var table =
         parse(html).getElementsByTagName('div')[2].getElementsByTagName('tr');
@@ -51,6 +52,38 @@ class GetCourses {
       // add course codes and name to array of maps
       coursesJson.add(tempMap);
     });
+
+    // add block and room number
+    for (int i = 0; i < coursesJson.length; i++) {
+      temp =
+          table[i + 1].outerHtml.split("</td>")[0].split("<br>")[1].split("-");
+      coursesJson[i]["block"] = temp[0].trim();
+      coursesJson[i]["roomNum"] = temp[1].split(".")[1].trim();
+    }
+
+    // obtain marks and link
+    for (int i = 0; i < coursesJson.length; i++) {
+      temp = table[i + 1]
+          .outerHtml
+          .split("</tr>")[0]
+          .split("<!--td></td-->")[1]
+          .split("</a>")[0]
+          .split('<td align="right">')[1];
+
+      if (temp.contains("href")) {
+        coursesJson[i]["url"] = temp.split("href=")[1].split(">")[0];
+        coursesJson[i]["mark"] = temp.split(">")[1].trim();
+        coursesJson[i]["isLink"] = true;
+      } else {
+        coursesJson[i]["mark"] = temp.split("<")[0].trim();
+        coursesJson[i]["isLink"] = temp.split("<")[0].trim();
+      }
+    }
+
+    // uncomment to log course map
+    // coursesJson.forEach((element) {
+    //   log(element.toString());
+    // });
 
     return coursesJson;
   }
