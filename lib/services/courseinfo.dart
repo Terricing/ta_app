@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:ta_app/main.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/dom.dart' hide Text;
@@ -71,19 +72,22 @@ class GetCourses {
           .split('<td align="right">')[1];
 
       if (temp.contains("href")) {
-        coursesJson[i]["url"] = temp.split("href=")[1].split(">")[0];
+        var url = temp.split("href=")[1].split(">")[0].split("amp;");
+        coursesJson[i]["url"] = url[0].substring(1, url[0].length) +
+            url[1].substring(0, url[1].length - 1);
+        log(coursesJson[i]["url"]);
         coursesJson[i]["mark"] = temp.split(">")[1].trim();
         coursesJson[i]["isLink"] = true;
       } else {
         coursesJson[i]["mark"] = temp.split("<")[0].trim();
-        coursesJson[i]["isLink"] = temp.split("<")[0].trim();
+        coursesJson[i]["isLink"] = false;
       }
     }
 
     // uncomment to log course map
-    // coursesJson.forEach((element) {
-    //   log(element.toString());
-    // });
+    coursesJson.forEach((element) {
+      log(element.toString());
+    });
 
     return coursesJson;
   }
@@ -91,6 +95,7 @@ class GetCourses {
 
 class HeadlessViewController {
   HeadlessInAppWebView? _headlessWebView;
+  late var baseUrl;
 
   HeadlessInAppWebView? get headlessWebView => _headlessWebView;
 
@@ -120,6 +125,19 @@ class HeadlessViewController {
     while (_isLoading) {
       await Future.delayed(Duration(milliseconds: 250));
     }
+    baseUrl = await headlessWebView?.webViewController.getUrl();
+    return headlessWebView?.webViewController.getHtml();
+  }
+
+  Future<String?> GetMarks(String urlAdd) async {
+    String url = "https://ta.yrdsb.ca/live/students/" + urlAdd;
+    log(url);
+    headlessWebView?.webViewController
+        .loadUrl(urlRequest: URLRequest(url: Uri.parse(url)));
+    while (await headlessWebView?.webViewController.isLoading() ?? false) {
+      await Future.delayed(Duration(milliseconds: 250));
+    }
+
     return headlessWebView?.webViewController.getHtml();
   }
 

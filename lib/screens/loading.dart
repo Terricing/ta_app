@@ -36,7 +36,21 @@ class _LoadingState extends State<Loading> {
         future: widget.webView.init(_getCourses.GenUrl(widget.user)),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            // build map
             _courseMap = (_getCourses.GetCourseMap(snapshot.data.toString()));
+
+            // obtain individual marks
+            _courseMap.forEach((element) {
+              if (element["isLink"]) {
+                // load html probably return new future
+                widget.webView
+                    .GetMarks(element["url"])
+                    .then((value) => log(value ?? ""));
+
+                //
+              }
+            });
+
             return ListView.builder(
               itemCount: _courseMap.length,
               itemBuilder: (context, index) {
