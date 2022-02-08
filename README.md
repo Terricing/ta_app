@@ -2,4 +2,4 @@
 
 A new mobile teach assist client for YRDSB students.
 
-Under development
+The app is partly functional, but much work needs to be done.
